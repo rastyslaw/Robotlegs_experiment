@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.robotlegs.food.events.*; 
+			import mx.collections.ArrayCollection;
+			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.core.FlexGlobals;
+			import mx.events.DataGridEvent;
+			import mx.events.IndexChangedEvent; 
+			import mx.printing.FlexPrintJob;
+			import mx.printing.PrintDataGrid;
+			
+			[Bindable]
+			internal var dataProvider:ArrayCollection; 
+			internal var printData:ArrayCollection;  
+			
+			private var curColumn:int; 
+			
+			private function changeTab(e:IndexChangedEvent):void {
+				var per:int = e.newIndex;
+				if (e.oldIndex != per) dispatchEvent(new FoodEvent(FoodEvent.TAB_CHANGE, per));    
+			} 
+			
+			private function statecol(e:DataGridEvent):void {
+				curColumn = e.columnIndex; 
+			}
+			
+			private function dataclick(e:DataGridEvent):void { 
+			  if (e.columnIndex != 1) e.preventDefault(); 
+			} 
+			
+			private function dataclickoff(e:DataGridEvent):void {
+				var col:DataGridColumn = myGrid.columns[e.columnIndex];
+				var newvalue:int = int(myGrid.itemEditorInstance[col.editorDataField]);
+				if (newvalue == 0 || newvalue > 1000) { 
+					e.preventDefault(); 
+					return; 
+				} 
+				dispatchEvent(new CorrectEvent(CorrectEvent.CHANGED, myGrid.selectedIndex, newvalue));  
+			} 
+			
+			public function deleteItem():void { 
+				dispatchEvent(new FoodEvent(FoodEvent.DELETE, myGrid.selectedIndex));
+			}
+			 
+			internal function goprint():void {   
+					if(printData.length > 3){ 
+						var printJob:FlexPrintJob = new FlexPrintJob();
+						var column:Array = []; 
+						for (var k:int; k<myGrid.columns.length-1; k++ ) {
+							column.push(myGrid.columns[k]); 
+						}  
+						if (printJob.start()) { 
+							var printGrid:PrintDataGrid = new PrintDataGrid();
+							printGrid.width = printJob.pageWidth;
+							printGrid.height = printJob.pageHeight;
+							printGrid.columns = column; 
+							printGrid.dataProvider = printData; 
+							printGrid.visible = false;
+							FlexGlobals.topLevelApplication.addElement(printGrid);
+							printJob.addObject(printGrid); 
+							
+							while (printGrid.validNextPage)	{ 
+									printGrid.nextPage();
+									printJob.addObject(printGrid);
+							}
+							printJob.send();
+							FlexGlobals.topLevelApplication.removeElement(printGrid);
+						} 
+					}
+					else Alert.show("Не выбрано ни одного продукта!","Ошибка печати");  
+				}
+		]]>
+	</fx:Script>
+	 
+	<mx:TabNavigator id="navi" width="657" height="20" change="changeTab(event)"> 
+			<s:NavigatorContent label="завтрак"/> 
+			<s:NavigatorContent label="обед"/> 
+			<s:NavigatorContent label="ужин"/> 
+		</mx:TabNavigator>    
+		<mx:DataGrid id="myGrid" headerRelease="statecol(event)" itemEditBegin="dataclick(event)" resizableColumns="false" 
+						itemEditEnd="dataclickoff(event)" editable = "true" dataProvider="{dataProvider}" width="657" draggableColumns="false">   
+			 <mx:columns> 
+				<mx:DataGridColumn dataField="name" headerText="название продукта" width="260"/>    
+				<mx:DataGridColumn dataField="size" headerText="вес" width="65"/>   
+				<mx:DataGridColumn dataField="calories" headerText="калории" width="65" /> 
+				<mx:DataGridColumn dataField="protein" headerText="белок" width="65"/> 
+				<mx:DataGridColumn dataField="fat" headerText="жир" width="65"/> 
+				<mx:DataGridColumn dataField="carbs" headerText="углеводы" width="65"/> 
+				<mx:DataGridColumn sortable="false">  
+					<mx:itemRenderer> 
+						<fx:Component>  
+							<mx:LinkButton click="outerDocument.deleteItem()" icon="@Embed('../../../../../assets/LinkButton.png')"/>
+						</fx:Component> 
+					</mx:itemRenderer>
+			  </mx:DataGridColumn>
+			</mx:columns> 
+		</mx:DataGrid> 
+</s:VGroup>

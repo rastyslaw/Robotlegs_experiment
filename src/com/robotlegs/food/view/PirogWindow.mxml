@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   title="{titl}" close="closeMe()" creationComplete="init()" 
+			   width="400" height="300">    
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout> 
+	
+	<fx:Declarations>
+        <mx:SolidColor id="sc1" color="blue" alpha=".6"/>
+        <mx:SolidColor id="sc2" color="red" alpha=".6"/>
+        <mx:SolidColor id="sc3" color="0x663300" alpha=".6"/>
+ 
+        <mx:SolidColorStroke id="callouts" weight="2" color="0x999999" alpha=".8" caps="square"/>
+        <mx:SolidColorStroke id="radial" weight="1" color="0xFFFFCC" alpha=".3"/>
+        <mx:SolidColorStroke id="pieborder" color="0x000000" weight="2" alpha=".5"/>
+    </fx:Declarations>
+	
+	<fx:Metadata>
+		[Event(name="DATA_CHANGE", type="WindowEvent")]  
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[ 
+			import com.robotlegs.food.events.WindowEvent;
+			import flash.events.Event;
+			import flash.events.MouseEvent;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
+			import mx.managers.PopUpManager; 
+			
+			[Bindable]
+			private var datacol:ArrayCollection;
+			
+			[Bindable] 
+			private var titl:String;
+			
+			public function get mas():ArrayCollection { 
+				return datacol;
+			}
+			
+			public function set mas(value:ArrayCollection):void {
+				datacol = value;
+			}
+			
+			public function set windowTitle(value:String):void {
+				titl = value; 
+			}
+			
+			protected function init():void {
+				if (isPopUp) { x = (stage.stageWidth-width) / 2;
+					y = (stage.stageHeight-height) / 2;
+				}
+			} 
+			
+			protected function closeMe():void { 
+				PopUpManager.removePopUp(this);
+			}
+			 
+			private function displayGold(data:Object, field:String, index:Number, percentValue:Number):String {
+				var temp:String= (" " + percentValue).substr(0,6); 
+				return data.name + ": " + data.col + '\n' + temp + "%";
+			}
+			
+			private function changeData(e:MouseEvent):void {
+				var event:WindowEvent = new WindowEvent(WindowEvent.DATA_CHANGE);
+				event.tar = e.target.label;  
+				dispatchEvent(event);  
+			}
+		]]> 
+	</fx:Script> 
+	<s:ButtonBar click="changeData(event)" id="bbar">  
+		<mx:ArrayCollection>
+			<fx:String>Завтрак</fx:String>
+			<fx:String>Обед</fx:String>
+			<fx:String>Ужин</fx:String>
+			<fx:String>Весь день</fx:String> 
+		</mx:ArrayCollection>
+	</s:ButtonBar>
+	<s:HGroup id="group" height="100%" width="100%"> 
+		<mx:PieChart id="pirog" height="100%" width="100%" showDataTips="true" dataProvider="{datacol}">
+			<mx:series>
+					<mx:PieSeries nameField="name" labelPosition="callout" 
+						field="col" labelFunction="displayGold" calloutStroke="{callouts}" 
+						radialStroke="{radial}" stroke="{pieborder}" fills="{[sc1, sc2, sc3]}" >
+						<mx:filters>
+							<fx:Array/> 
+						</mx:filters> 
+					</mx:PieSeries>
+				</mx:series>
+			</mx:PieChart>  
+			<mx:Legend dataProvider="{pirog}"/>
+	</s:HGroup> 
+</s:TitleWindow>

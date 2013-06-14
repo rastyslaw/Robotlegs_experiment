@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+			xmlns:s="library://ns.adobe.com/flex/spark"
+			minWidth="100" minHeight="22"
+			alpha.disabled="0.5" blendMode="normal">
+
+	<fx:Metadata>
+		[HostComponent("spark.components.TextInput")]
+	</fx:Metadata> 
+
+	<!-- states -->
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="disabled"/>
+		<s:State name="prompting"/>
+		<s:State name="normalWithPrompt"/>
+		<s:State name="disabledWithPrompt"/>
+	</s:states>
+
+	<!-- border --> 
+	<!--- @private -->
+	<s:Rect left="0" right="0" top="0" bottom="0" id="border">
+		<s:stroke>     
+			<s:SolidColorStroke id="borderStroke" weight="1" color="0x82826b"/>
+		</s:stroke>
+	</s:Rect>
+	
+	<!-- fill -->
+	<!--- Defines the appearance of the TextInput component's background. -->
+	<s:Rect id="background" left="1" right="1" top="1" bottom="1">
+		<s:fill>
+			<!--- @private Defines the background fill color. -->
+			<s:SolidColor id="bgFill" color="0xf3f4de" />
+		</s:fill>
+	</s:Rect>
+	
+	<!-- shadow -->
+	<!--- @private -->
+	<s:Rect left="1" top="1" right="1" height="1" id="shadow">
+		<s:fill>
+			<s:SolidColor color="0x000000" alpha="0.12" />
+		</s:fill>
+	</s:Rect>
+	
+	<!-- text -->
+	<s:RichEditableText id="textDisplay" left="26" right="24" top="1" bottom="0"
+			color="#333333"
+			verticalAlign="middle" />
+	
+	<!-- prompt -->
+	<s:Label id="promptDisplay" left="26" right="4" top="1" bottom="0" includeIn="normalWithPrompt"
+			color="#aaaaaa" fontStyle="italic"
+			maxDisplayedLines="1" 
+			verticalAlign="middle"/>
+			 
+	<!-- clear button -->
+	<s:Image id="clearButton" source="@Embed('../../assets/search.png')" left="4" verticalCenter="0" useHandCursor="true" buttonMode="true"/>
+</s:SparkSkin>

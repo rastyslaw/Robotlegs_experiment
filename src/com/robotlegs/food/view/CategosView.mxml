@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="100%" height="100%">  
+	
+	<fx:Script>
+		<![CDATA[
+			import com.robotlegs.food.events.*; 
+			import mx.collections.IList;
+			 
+			[Bindable]
+			public var dataProvider:IList;
+			 
+			private function getList(i:int):void {  
+				food.text = ""; 
+				dispatchEvent(new FoodEvent(FoodEvent.SELECT_DROP_DOWN, i+1));   
+			}
+			 
+			private function getFoodData(s:String):void {  
+				if (s.length >= 2) dispatchEvent(new FoodEvent(FoodEvent.SELECT_SEARCH, 0, s));
+			}
+			
+			private function printing():void {
+				dispatchEvent(new FoodEvent(FoodEvent.PRINT, 0)); 
+			}
+		]]>
+	</fx:Script>
+	
+	<s:HGroup gap="335"> 
+		<s:DropDownList id="dropList" dataProvider="{dataProvider}" width="240" prompt="Выберите категорию" change="getList(dropList.selectedIndex)"/> 
+		<s:Button label="Печать" click="printing()"/> 
+	</s:HGroup>
+	<s:TextInput id="food" width="220" prompt="поиск..." change="getFoodData(food.text)" click="food.text=''"/>
+</s:VGroup> 

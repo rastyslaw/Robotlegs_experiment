@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+			   xmlns:food="com.robotlegs.food.*"
+			   xmlns:view="com.robotlegs.food.view.*">
+			   
+	<fx:Declarations>
+		<food:FoodContext contextView="{this}"/> 
+	</fx:Declarations>
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		s|Panel { 
+			font-size: 14pt; 
+		} 
+		s|List { 
+			font-size: 11pt; 
+		} 
+		s|TextInput {
+			skinClass: ClassReference("skins.SuperTextInputSkin"); 
+        }
+	</fx:Style>
+	
+	<s:Panel id="mainPanel" title="Калькулятор каллорий"> 
+		<s:VGroup paddingLeft="11" paddingRight="10" paddingTop="6" paddingBottom="66">
+			<view:CategosView/> 
+			<view:ListView/> 
+			<view:GridView/>  
+		</s:VGroup>	
+		<view:AlldayView bottom="7" left="11" />
+	</s:Panel>
+</s:Application> 

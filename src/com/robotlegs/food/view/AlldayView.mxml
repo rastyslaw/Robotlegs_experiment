@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   creationComplete="init()"> 
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.robotlegs.food.events.*; 
+			import flash.events.MouseEvent;
+			import mx.collections.ArrayCollection;
+			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			 
+			[Bindable]  
+			internal var dataProvider:IList;
+			
+			[Bindable]
+			internal var dataProvider2:IList;  
+			
+			public var pwindow:PirogWindow = new PirogWindow();  
+			
+			private function init():void { 
+				 pwindow.addEventListener(WindowEvent.DATA_CHANGE, setDataPirog);
+			}
+			
+			private function setDataPirog(event:WindowEvent):void {
+				 dispatchEvent(new FoodEvent(FoodEvent.PIROG, 0, event.tar));
+				 pwindow.windowTitle = "Диаграмма за " + event.tar; 
+			}
+			
+			public function deleteItem():void {   
+				dispatchEvent(new FoodEvent(FoodEvent.DELETE, -1));
+			}
+			
+			public function showPirog(e:MouseEvent):void {
+				if(dataProvider2[0].size != 0){ 
+					var bol:Boolean;
+					if (pwindow.isPopUp) bol = true;
+					PopUpManager.addPopUp(pwindow, this, false); 
+						if(!bol) {  
+							var mas:ArrayCollection = new ArrayCollection( [
+								{name:"Protein", col:dataProvider2[0].protein },
+								{name:"Fat", col:dataProvider2[0].fat }, 
+								{name:"Carbs", col:dataProvider2[0].carbs} 
+							]); 
+						pwindow.mas = mas;    
+						pwindow.windowTitle = "Диаграмма за весь день";
+						pwindow.bbar.selectedIndex = 3;
+					}
+				} 
+				else Alert.show("Не выбрано ни одного продукта!","Ошибка диаграммы");       
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:DataGrid id="allDay" rowCount="1" showHeaders="false" width="657" height="27" dataProvider="{dataProvider}">
+			<mx:columns>
+				<mx:DataGridColumn width="260" dataField="name"/> 
+				<mx:DataGridColumn width="65" dataField="size"/>  
+				<mx:DataGridColumn width="65" dataField="calories"/>
+				<mx:DataGridColumn width="65" dataField="protein"/> 
+				<mx:DataGridColumn width="65" dataField="fat"/> 
+				<mx:DataGridColumn width="65" dataField="carbs"/>
+				<mx:DataGridColumn>
+					<mx:itemRenderer>  
+							<fx:Component> 
+								<mx:LinkButton label="Стереть" click="outerDocument.deleteItem()"/>  
+							</fx:Component>
+						</mx:itemRenderer> 
+				  </mx:DataGridColumn>
+			</mx:columns> 
+		</mx:DataGrid>	 
+		<mx:DataGrid id="allDay2" rowCount="1" showHeaders="false" bottom="allDay:6" left="allDay:11" width="657" height="27" dataProvider="{dataProvider2}">
+			<mx:columns>
+				<mx:DataGridColumn width="260" dataField="name"/>
+				<mx:DataGridColumn width="65" dataField="size"/>  
+				<mx:DataGridColumn width="65" dataField="calories"/>
+				<mx:DataGridColumn width="65" dataField="protein"/>
+				<mx:DataGridColumn width="65" dataField="fat"/> 
+				<mx:DataGridColumn width="65" dataField="carbs"/>
+				<mx:DataGridColumn>
+					<mx:itemRenderer> 
+							<fx:Component>  
+								<mx:LinkButton label="Графики" click="outerDocument.showPirog(event)"/> 
+							</fx:Component>
+						</mx:itemRenderer>
+				  </mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>	
+</s:VGroup>

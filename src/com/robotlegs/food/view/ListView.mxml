@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="100%" height="100%"> 
+
+	<fx:Script>
+		<![CDATA[
+			import com.robotlegs.food.events.FoodEvent;
+			import mx.collections.IList;
+			 
+			[Bindable]
+			internal var listCollect:IList;  
+			
+			private function needdata(s:String):void { 
+				dispatchEvent(new FoodEvent(FoodEvent.SELECT_LIST, 0, s)); 
+			}
+			
+			public function addToMyGrid():void {  
+				if (sortGrid.dataProvider == null || sortGrid.dataProvider == "") return;
+				dispatchEvent(new FoodEvent(FoodEvent.ADD, 0, lister.selectedItem));   
+			} 
+		]]>
+	</fx:Script>
+	
+	<s:List id="lister" width="260" height="100" dataProvider="{listCollect}" change="needdata(String(lister.selectedItem))"/>
+		<mx:DataGrid id="sortGrid" rowCount="1" sortableColumns="false" resizableColumns="false">   
+			<mx:columns>
+				<mx:DataGridColumn dataField="calories" headerText="калории" width="75"/> 
+				<mx:DataGridColumn dataField="protein" headerText="белок" width="75"/>
+				<mx:DataGridColumn dataField="fat" headerText="жир" width="75"/>  
+				<mx:DataGridColumn dataField="carbs" headerText="углеводы" width="75"/>
+				<mx:DataGridColumn sortable="false" width="80">  
+					<mx:itemRenderer> 
+						<fx:Component> 
+							<mx:LinkButton label="Добавить" click="outerDocument.addToMyGrid()"/> 
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</mx:columns> 
+		</mx:DataGrid> 
+</s:HGroup>
